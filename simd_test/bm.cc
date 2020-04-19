@@ -1,4 +1,11 @@
+#include <iostream>
+#include <iomanip>
+#include <string>
+#include <map>
+#include <random>
 #include <vector>
+#include <cmath>
+
 
 #include <benchmark/benchmark.h>
 
@@ -7,17 +14,23 @@ std::vector<T> GenerateData(int count) {
   std::vector<T> data;
   data.reserve(count);
 
+  // Seed with a real random value, if available.
+  std::random_device r;
+  std::default_random_engine e1(r());
+  std::uniform_int_distribution<int> uniform_dist(1, 10000);
+
   for (int i=0; i<count; ++i) {
-    data.emplace_back(static_cast<T>(i));
+    data.emplace_back(static_cast<T>(uniform_dist(e1)));
   }
   return data;
 }
 
-//template <typename T>
-//T VectorSum(std::vector<T> vals) __attribute__((noinline));
+// For some reason this does not work:
+// template <typename T>
+// T VectorSum(const std::vector<T>& vals) __attribute__((noinline));
 
 template <typename T>
-T VectorSum(std::vector<T> vals) {
+T VectorSum(const std::vector<T>& vals) {
   T accum = 0;
   for(auto v : vals) {
     accum += v;
